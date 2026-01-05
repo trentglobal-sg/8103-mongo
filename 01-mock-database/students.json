@@ -1,0 +1,35 @@
+[
+    {
+        "_id": {
+            "$oid": "695b618806439012cbe0c65d"
+        },
+        "name": "Alan Snow",
+        "dateOfBirth": {
+            "$date": "2010-08-11"
+        },
+        "certificates": [
+            {
+                "certificateName": "Beginners I",
+                "date": {
+                    "$date": "2025-08-11"
+                }
+            },
+            {
+                "certificateName": "LifeSaving I",
+                "date": {
+                    "$date": "2025-09-11"
+                }
+            }
+        ],
+        "parent": {
+            "id": {
+                "$oid":"695b5e894a7fa2ae1b25b6cb"
+            },
+            "name":"Jon Snow"
+        },
+        "sessions":[
+            {"$oid":"695b642e28fc607fac513380"},
+            {"$oid":"695b64ea4193e4dd7a735f16"}
+        ]
+    }
+]

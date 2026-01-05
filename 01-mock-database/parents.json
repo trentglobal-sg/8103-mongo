@@ -1,0 +1,44 @@
+[
+    {
+        "_id": {
+            "$oid": "695b5e894a7fa2ae1b25b6cb"
+        },
+        "name": "Jon Snow",
+        "contact": [
+            "+65 1231234",
+            "+65 7717723"
+        ],
+        "email": "jonsnow@asd.com",
+        "address": {
+            "streetName": "Yishun Ring Road",
+            "buildingName": "Blk 666",
+            "unitNumber": "1313",
+            "floor": "13"
+        },
+        "students":[
+            {
+                "name":"Alan Snow",
+                "id":{
+                    "$oid":"695b618806439012cbe0c65d"
+                }
+            }
+        ]
+    },
+    {
+        "_id": {
+            "$oid": "695b5fccd763403ae412bd25"
+        },
+        "name": "Tony Stare",
+        "contact": [
+            "+65 1231234",
+            "+65 7717723"
+        ],
+        "email": "tonystare@asd.com",
+        "address": {
+            "streetName": "Yishun Ring Road",
+            "buildingName": "Blk 666",
+            "unitNumber": "1313",
+            "floor": 15
+        }
+    }
+]
