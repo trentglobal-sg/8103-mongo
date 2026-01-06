@@ -120,3 +120,71 @@ db.listingsAndReviews.find({
     'beds': 1,
     "price": 1
 })
+
+// find by a single element in an array
+db.listingsAndReviews.find({
+    amenities: "Washer"
+}, {
+    name: 1,
+    amenities: 1
+})
+
+// find by more than one element in the array
+// the array must have ALL the search values
+db.listingsAndReviews.find({
+    amenities: {
+        $all: ["Washer", "Dryer"]
+    }
+}, {
+    name: 1,
+    amenities: 1
+})
+
+// include documents which the indiciated array contains at least ONE
+// of the values
+db.listingsAndReviews.find({
+    amenities: {
+        $in: ["Oven", "Microwave"]
+    }
+},{
+    name: 1,
+    amenities: 1
+})
+
+// find all listings that have been reviewed by Bart
+db.listingsAndReviews.find({
+    reviews: {
+        $elemMatch: {
+            reviewer_name:"Bart"
+        }
+    }
+}, {
+    'name': 1,
+    'reviews.$': 1
+})
+
+// find all listings which first review was before 2019
+db.listingsAndReviews.find({
+    first_review: {
+        $lt: ISODate("2019-01-01")
+    }
+}, {
+    name: 1,
+    first_review: 1
+})
+
+// searching by string matches is too exact
+// we use regular expression to match by string patterns
+db.listingsAndReviews.find({
+    name: {
+        $regex: "Spacious",
+        $options: "i"
+    }
+},{
+    name: 1
+})
+
+// find by _id
+db.movies.find({
+    _id: ObjectId("573a1391f29313caabcd6d40")
+})
