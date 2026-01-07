@@ -86,8 +86,68 @@ async function main() {
         })
     });
 
+    // Query String parameter
+    // example: ?name=chicken&tags=popular,spicy&ingredients=chicken,pasta
+    // name - the name of the recipe of the search by
+    // tags - the tag that to search for using comma delimited strings
+    //        example: popular,spicy
+    // ingredients - the ingredients to for using comma delimited strings
+    //        example: pasta,chicken
     app.get('/recipes', async function (req, res) {
-        const recipes = await db.collection('recipes').find().project({
+        console.log(req.query);
+        const name = req.query.name;
+        const tags = req.query.tags;
+        const ingredients = req.query.ingredients;
+        // when critera is an empty object, we will get all the recipes
+        const critera = {};
+        if (name) {
+            // search by string patterns using regular expression
+            critera["name"] = {
+                $regex: name,
+                $options: "i"
+            }
+        }
+
+        if (tags) {
+            critera["tags.name"] = {
+                $in: tags.split(",")
+            }
+        }
+
+        // simple search - must be exact match and is case sensitive
+        // if (ingredients) {
+        //     critera["ingredients.name"] = {
+        //         $all: ingredients.split(",")
+        //     }
+        // }
+
+        // advanced search: use $all with regular expressions
+        if (ingredients) {
+            // traditional way of using for...loop
+            // const ingredientArray = ingredients.split(",");
+            // const regularExpressionArray = [];
+            // for (let ingredient of ingredientArray) {
+            //     regularExpressionArray.push(new RegExp(ingredient, 'i'));
+            // }
+
+            // modern way: use .map
+            // const ingredientArray = ingredients.split(",");
+            // const regularExpressionArray = ingredientArray.map(function(ingredient){
+            //     return new RegExp(ingredient, 'i')
+            // })
+
+            // using arrow function:
+            const regularExpressionArray = ingredients.split(",").map(
+                ingredient=> new RegExp(ingredient, 'i')
+            );
+
+            critera['ingredients.name'] =  {
+                $all: regularExpressionArray
+            }
+        }
+
+        console.log(critera);
+        const recipes = await db.collection('recipes').find(critera).project({
             name: 1, cuisine: 1, tags: 1, prepTime: 1
         }).toArray();
         res.json({
@@ -196,16 +256,16 @@ async function main() {
 
             if (results.deletedCount === 0) {
                 return res.status(404).json({
-                    "error":"Not found"
+                    "error": "Not found"
                 })
             }
 
             res.json({
-                'message':'Deleted successfully'
+                'message': 'Deleted successfully'
             })
         } catch (e) {
             res.status(500).json({
-                'error':'Internal Server Error'
+                'error': 'Internal Server Error'
             })
         }
 
