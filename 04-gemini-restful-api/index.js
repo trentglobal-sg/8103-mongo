@@ -4,7 +4,7 @@ require('dotenv').config();  // put the variables in the .env file into process.
 const cors = require('cors');
 const { connect } = require("./db");
 const { ObjectId } = require('mongodb');
-const { ai, generateSearchParams} = require('./gemini');
+const { ai, generateSearchParams, generateRecipe} = require('./gemini');
 
 // SETUP EXPRESS
 const app = express();
@@ -306,6 +306,40 @@ async function main() {
         const recipes = await db.collection('recipes').find(criteria).toArray();
         res.json({
             recipes
+        })
+    })
+
+    app.post('/ai/recipes', async function(req,res){
+        const recipeText = req.body.recipeText;
+        const allCuisines = await db.collection('cuisines').distinct('name');
+        const allTags = await db.collection('tags').distinct('name');
+        const newRecipe = await generateRecipe(recipeText, allCuisines, allTags);
+        
+        // get the cuisine document
+        const cuisineDoc = await db.collection('cuisines').findOne({
+            "name": newRecipe.cuisine
+        });
+
+        if (cuisineDoc) {
+            newRecipe.cuisine = cuisineDoc;
+        } else {
+            return res.status(404).json({
+                "error":"AI tried to use a cuisine that doesn't exist"
+            })
+        }
+
+        // get all the tags that corresponds 
+        const tagDocs = await db.collection('tags').find({
+            'name': {
+                $in: newRecipe.tags
+            }
+        }).toArray();
+        newRecipe.tags = tagDocs;
+
+        // insert into the database
+        const result = await db.collection('recipes').insertOne(newRecipe);
+        res.json({
+            recipeId: result.insertedId
         })
     })
 }
