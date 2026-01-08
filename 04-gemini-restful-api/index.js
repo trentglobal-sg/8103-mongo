@@ -156,6 +156,17 @@ async function main() {
         })
     })
 
+    // use the route parameter `recipeId` to refer to the recipe we want
+    app.get("/recipes/:recipeId", async function(req,res){
+        const recipeId = req.params.recipeId;
+        const recipe = await db.collection("recipes").findOne({
+            _id: new ObjectId(recipeId)
+        })
+        res.json({
+            recipe
+        });
+    })
+
     // tags: ["quick", "easy", "vegetarian"]
     app.post('/recipes', async function (req, res) {
         // extract out the various components of the recipe document from req.body
